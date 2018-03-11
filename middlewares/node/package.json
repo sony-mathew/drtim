@@ -1,0 +1,25 @@
+{
+  "name": "drtim",
+  "version": "1.0.0",
+  "description": "Distributed Request Tracing in Microservices",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sony-mathew/drtim.git"
+  },
+  "keywords": [
+    "drtim"
+  ],
+  "author": "Sony Mathew",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sony-mathew/drtim/issues"
+  },
+  "homepage": "https://github.com/sony-mathew/drtim#readme",
+  "dependencies": {
+    "js-sha256": "^0.9.0"
+  }
+}
