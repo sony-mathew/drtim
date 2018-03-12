@@ -1,7 +1,7 @@
 // Basic modules
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4040;
 const request = require('request');
 const bodyParser = require('body-parser');  
 const url = require('url');  
@@ -15,20 +15,26 @@ app.use(bodyParser.json());
 // registering routes ==================================
 app.get('/', (req, res) => {
   res.send({
-    title: 'API Service'
+    title: 'IP Service'
   });
 });
 
-app.get('/search', (req, res) => {
-  console.log(req.params);
-  console.log(req.query);
+app.get('/ip', (req, res) => {
+  // console.log(req.params);
+  // console.log(req.query);
 
   const ip = req.query['ip'];
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
   // console.log(ip);
 
-  request(`http://freegeoip.net/json/${ip}`, function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred
+  request({
+    url: `http://localhost:8080/search?ip=${ip}`,
+    headers: {
+      'X-DRTIM-COR-ID': res.get('X-DRTIM-COR-ID'),
+      'X-DRTIM-COR-CHILD': res.get('X-DRTIM-COR-CHILD')
+    }
+  }, function (error, response, body) {
+    console.log('error:', error);
     res.send(body);
   });
 });

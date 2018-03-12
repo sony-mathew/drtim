@@ -14,7 +14,7 @@ const logRequest = (req, res) => {
 
 const drtim = (req, res, next) => {
   var drtimHeader = req.get('X-DRTIM-COR-ID');
-  var drtimChildID = req.get('X-DRTIM-COR-CHILD') || 0;
+  var drtimChildID = parseInt(req.get('X-DRTIM-COR-CHILD') || '') || 0;
 
   if (drtimHeader) {
     res.setHeader('X-DRTIM-COR-ID', drtimHeader);
