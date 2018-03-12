@@ -7,19 +7,24 @@ const hasher = (h) => {
   return hash.hex().substr(0, 32);
 };
 
+const logRequest = (req, res) => {
+  const header = `[DRTIM-COR-ID ${res.get('X-DRTIM-COR-ID')} ${res.get('X-DRTIM-COR-CHILD')}]`;
+  console.log(`${header} Starting ${req.method} for ${req.originalUrl} at ${(new Date).toString()}`);
+};
+
 const drtim = (req, res, next) => {
-  console.log('Time:', Date.now());
-  
-  var drtimHeader = req.getHeader('X-DRTIM-COR-ID');
-  var drtimChildID = req.getHeader('X-DRTIM-COR-CHILD') || 0;
+  var drtimHeader = req.get('X-DRTIM-COR-ID');
+  var drtimChildID = req.get('X-DRTIM-COR-CHILD') || 0;
 
   if (drtimHeader) {
     res.setHeader('X-DRTIM-COR-ID', drtimHeader);
   } else {
     var uniqID = hasher({ time: (new Date()).toString() });
-    res.setHeader('X-DRTIM-COR-ID', drtimHeader);
+    res.setHeader('X-DRTIM-COR-ID', uniqID);
   }
   res.setHeader('X-DRTIM-COR-CHILD', drtimChildID + 1);
+  
+  logRequest(req, res);
 
   next();
 };
