@@ -30,7 +30,6 @@ app.get('/ip', (req, res) => {
 
   const ip = req.query['ip'];
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
-  // console.log(ip);
 
   request({
     url: `http://localhost:8080/search?ip=${ip}`,
