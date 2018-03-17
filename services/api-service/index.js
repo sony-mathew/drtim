@@ -20,15 +20,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/search', (req, res) => {
-  console.log(req.params);
-  console.log(req.query);
+  // console.log(req.params);
+  // console.log(req.query);
 
   const ip = req.query['ip'];
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
   // console.log(ip);
 
   request(`http://freegeoip.net/json/${ip}`, function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred
+    // console.log('error:', error); // Print the error if one occurred
     res.send(body);
   });
 });

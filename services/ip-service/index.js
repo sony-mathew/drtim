@@ -12,11 +12,16 @@ app.use(requestTracer.DRTIM);
 app.use(bodyParser.urlencoded({ extended: false }));  
 app.use(bodyParser.json());
 
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
+
 // registering routes ==================================
 app.get('/', (req, res) => {
-  res.send({
-    title: 'IP Service'
-  });
+  res.render('index.html');
+});
+
+app.get('/status', (req, res) => {
+  res.render('index.html');
 });
 
 app.get('/ip', (req, res) => {
@@ -34,7 +39,9 @@ app.get('/ip', (req, res) => {
       'X-DRTIM-COR-CHILD': res.get('X-DRTIM-COR-CHILD')
     }
   }, function (error, response, body) {
-    console.log('error:', error);
+    if (error) {
+      console.log('error:', error);
+    }
     res.send(body);
   });
 });
