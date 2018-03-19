@@ -48,7 +48,7 @@ app.get('/ip', (req, res) => {
 
 // start server ========================================
 app.listen(port, () => {
-  console.log(`API Service App listening on port ${port}`);
+  console.log(`IP Service App listening on port ${port}`);
 });
 
 module.exports = app;
