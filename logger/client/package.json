@@ -1,0 +1,17 @@
+{
+  "name": "drtim-logstreamer",
+  "version": "1.0.0",
+  "description": "streaming logs to monitoring server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "drtim"
+  ],
+  "author": "Sony Mathew",
+  "license": "ISC",
+  "dependencies": {
+    "split": "^1.0.1"
+  }
+}
