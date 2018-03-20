@@ -3,7 +3,7 @@ const Schema = Mongoose.Schema;
 
 const logSchema = new Schema({
   corId: String,
-  relation: String,
+  relation: {},
   timestamp: Date,
   content: {}
 });
