@@ -34,7 +34,7 @@ class StreamingClient {
   }
 
   send(payload) {
-    this.client.write(JSON.stringify(payload));
+    this.client.write(`${JSON.stringify(payload)}||||`);
   }
 
   queue(content) {

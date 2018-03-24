@@ -1,5 +1,6 @@
 const net = require('net');
 const DB = require('./models/db');
+const Merge = require('deepmerge');
 
 class StoreLog {
   constructor() {
@@ -18,16 +19,25 @@ class StoreLog {
 
       let payload = this.queue[0];
       let corrData = this.getCorrelationID(payload.content);
+      let service = await this.getService(payload.service);
+
       if (corrData) {
         let log = await this.getLogEntry(corrData.corId);
         if (log) {
-          await this.update(corrData, payload, log);
+          log = await this.update(corrData, payload, log);
         } else  {
-          await this.create(corrData, payload);
+          log = await this.create(corrData, payload);
         }
+
+        service.lastCorId = log.corId;
+        await service.save();
       } else {
-        //
+        if (service.lastCorId) {
+          let log = await this.getLogEntry(service.lastCorId);
+          await this.update(corrData, payload, log, true); 
+        }
       }
+
       this.queue.splice(0, 1);
       this.processing = false;
 
@@ -42,67 +52,85 @@ class StoreLog {
     return log;
   }
 
-  async setServiceName(serviceName) {
-    let serviceRec = await DB.Service.findOne({ "name" : serviceName });
+  async getService(serviceNumber) {
+    let serviceRec = await DB.Service.findOne({ "serviceNumber" : serviceNumber });
     if (!serviceRec) {
-      const service = new DB.Service({ name: serviceName, timestamp: (new Date()) });
-      await service.save();
+      serviceRec = new DB.Service({ serviceNumber: serviceNumber, timestamp: (new Date()) });
+      await serviceRec.save();
     }
+    return serviceRec;
   }
 
   getCorrelationID(content) {
-    const match = content.match(/\[DRTIM-COR-ID\s[a-z0-9]+\s\d\]/);
+    const match = content.match(/\[DRTIM-COR-ID\s[a-z0-9]+\s(\d|\-)+\]/)
     if (match) {
       const header = match[0];
 
       let corId = header.match(/[a-z0-9]+/)[0] || '';
-      let childId = header.match(/\s\d\]/)[0] || '';
-      childId = childId.trim().replace(']', '');
+      let childIdChain = header.match(/\s(\d|\-)+\]/)[0] || '';
+      childIdChain = childIdChain.trim().replace(']', '');
 
-      return { corId: corId, childId: childId };
+      return { corId: corId, childIdChain: childIdChain };
     }
 
     return false;
   }
 
-  async update(corrData, payload, log) {
-    log.relation = log.relation || {};
-    log.relation[corrData.childId] = log.relation[corrData.childId] || [];
-    log.relation[corrData.childId].push(payload.service);
+  createRelation(relation, childIdChain) {
+    let ids = childIdChain.split('-').map((id) => parseInt(id));
+    let chain = 'x';
+    for(let i = ids.length - 1; i >= 0; --i) {
+      chain = { [ids[i]]: chain };
+    }
+
+    let merged = Merge(relation, chain);
+    console.log(relation, chain, merged);
+    return merged;
+  }
+
+  async update(corrData, payload, log, onlyContent = false) {
+    if(!onlyContent) {
+      log.relation = this.createRelation(log.relation || {}, corrData.childIdChain);
+      log.markModified('relation'); 
+    }
 
     log.content = log.content || {};
     log.content[payload.service] = log.content[payload.service] || [];
     log.content[payload.service].push({ timestamp: payload.timestamp, content: payload.content });
-
-    log.markModified('relation');
     log.markModified('content');
 
     await log.save();
-    console.log('Saved ', corrData.corId);
+    console.log('Saved ', log.corId);
+    return log;
   }
 
   async create(corrData, payload) {
     let log = new DB.Log({ 
       corId: corrData.corId,
-      relation: { [corrData.childId]: [ payload.service ] },
+      relation: this.createRelation({}, corrData.childIdChain),
       timestamp: payload.timestamp,
       content: { [payload.service]: [{ timestamp: payload.timestamp, content: payload.content }]}
     });
     await log.save();
-    console.log('Created ', corrData.corId);
+    console.log('Created ', log.corId);
+    return log;
   }
 }
 
 let SL = new StoreLog();
 var server = net.createServer(function(socket) {
   socket.on('data', async function(data) {
-    const strData = data.toString();
+    let strData = data.toString();
     try {
-      const payload = JSON.parse(strData);
-      await SL.queueForStoring(payload);
-      console.log(`[${payload.service}\t][${payload.timestamp}] ${payload.content}`);
+      strData = strData.split('||||');
+      strData.pop(); // last element will be empty
+      for(i = 0; i < strData.length; ++i) {
+        const payload = JSON.parse(strData[i].trim());
+        await SL.queueForStoring(payload);
+        console.log(`[${payload.service}][${payload.timestamp}] ${payload.content}`);
+      }
     } catch(e) {
-      console.log('Parse error.', e);
+      console.log('Parse error.', strData, e);
     }
   });
 });

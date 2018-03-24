@@ -2,7 +2,9 @@ const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
 
 const serviceSchema = new Schema({
+  serviceNumber: Number,
   name: String,
+  lastCorId: String,
   timestamp: Date
 });
 

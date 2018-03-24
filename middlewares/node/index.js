@@ -13,8 +13,6 @@ const logRequest = (req, res) => {
 };
 
 const drtim = function(req, res, next) {
-  console.log(this.service);
-
   var drtimHeader = req.get('X-DRTIM-COR-ID');
   var drtimChildID = req.get('X-DRTIM-COR-CHILD');
 

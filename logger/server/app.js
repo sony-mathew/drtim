@@ -1,7 +1,7 @@
 // Basic modules
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 7777;
+const port = process.env.PORT || 7770;
 const bodyParser = require('body-parser');
 const querystring = require('querystring');
 app.use(bodyParser.urlencoded({ extended: false }));  
@@ -36,9 +36,15 @@ app.get('/logs', async (req, res) => {
     .limit(PER_PAGE)
     .skip(PER_PAGE * (page - 1))
     .sort({
-      _id: 'asc'
+      _id: 'desc'
     });
   res.send(logs);
+});
+
+app.get('/logs/:id', async (req, res) => {
+  const id = req.params.id;
+  let log = await DB.Log.findOne({ corId: id });
+  res.send(log);
 });
 
 
