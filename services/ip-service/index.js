@@ -8,7 +8,9 @@ const url = require('url');
 const querystring = require('querystring'); 
 const requestTracer = require('../../middlewares/node');
 
-app.use(requestTracer.DRTIM);
+requestTracer.DRTIM.service = 1;
+app.use(requestTracer.DRTIM.bind(requestTracer.DRTIM));
+
 app.use(bodyParser.urlencoded({ extended: false }));  
 app.use(bodyParser.json());
 

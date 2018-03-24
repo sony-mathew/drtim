@@ -12,9 +12,17 @@ const logRequest = (req, res) => {
   console.log(`${header} Starting ${req.method} for ${req.originalUrl} at ${(new Date).toString()}`);
 };
 
-const drtim = (req, res, next) => {
+const drtim = function(req, res, next) {
+  console.log(this.service);
+
   var drtimHeader = req.get('X-DRTIM-COR-ID');
-  var drtimChildID = parseInt(req.get('X-DRTIM-COR-CHILD') || '') || 0;
+  var drtimChildID = req.get('X-DRTIM-COR-CHILD');
+
+  if (drtimChildID) {
+    drtimChildID = `${drtimChildID}-${this.service}`;
+  } else {
+    drtimChildID = `${this.service}`;
+  }
 
   if (drtimHeader) {
     res.setHeader('X-DRTIM-COR-ID', drtimHeader);
@@ -22,7 +30,7 @@ const drtim = (req, res, next) => {
     var uniqID = hasher({ time: (new Date()).toString() });
     res.setHeader('X-DRTIM-COR-ID', uniqID);
   }
-  res.setHeader('X-DRTIM-COR-CHILD', drtimChildID + 1);
+  res.setHeader('X-DRTIM-COR-CHILD', drtimChildID);
   
   logRequest(req, res);
 
