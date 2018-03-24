@@ -9,7 +9,7 @@ export class LoggerService extends BaseService {
   private logsPath: string = '/logs';
   private logPath: string = '/logs/{id}';
 
-  show(id: number | string) {
+  show(id: string) {
     let url = this.getURL(id);
     return this.http.get(url).pipe(catchError(this.handleError('Show One Log', {})));
   }
@@ -18,7 +18,7 @@ export class LoggerService extends BaseService {
     return this.http.get(`${this.basePath}${this.logsPath}?page=${page}`).pipe(catchError(this.handleError('Logs', {})));
   }
 
-  private getURL(id: string | number) {
+  private getURL(id: string) {
     id = id.toString();
     let url = this.interpolateURI({ paths: [this.logPath], params: { id: id } });
     return url;

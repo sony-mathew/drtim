@@ -1,0 +1,64 @@
+<mat-tab-group *ngIf="log && log._id">
+  <mat-tab label="Basic Details">
+    <mat-card fxLayout="column" fxLayoutGap="20px">
+      <div fxLayout="row" fxLayoutGap="30px">
+        <div fxFlex="20"> Cor ID</div>
+        <div> {{ log.corId }} </div>
+      </div>
+      <div fxLayout="row" fxLayoutGap="30px">
+        <div fxFlex="20"> Time </div>
+        <div> {{ log.timestamp | formatDate }} </div>
+      </div>
+      <div fxLayout="row" fxLayoutGap="30px">
+        <div fxFlex="20"> Services Touched </div>
+        <div> {{ (log.content | keys).join(', ') }} </div>
+      </div>
+      <div fxLayout="row" fxLayoutGap="30px">
+        <div fxFlex="20"> Request Tree </div>
+        <div>
+          <div class="tree">
+            <ng-container *ngTemplateOutlet="showTree; context: { relation: log.relation }">
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </mat-tab>
+  <mat-tab label="Logs">
+    <div  *ngFor="let key of log.content | keys">
+      <ng-container *ngTemplateOutlet="serviceLog; context: { log: log, key: key }">
+      </ng-container>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<div *ngIf="!log">Loading...</div>
+
+<ng-template #showTree let-relation="relation">
+  <ul *ngIf="relation | checkObject">
+    <li *ngFor="let key of relation | keys">
+      <a>{{ key }}</a>
+      <ng-container *ngTemplateOutlet="showTree; context: { relation: relation[key] }">
+      </ng-container>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #serviceLog let-log="log" let-key="key">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Service - {{ key }}
+      </mat-panel-title>
+      <mat-panel-description>
+        Entries : {{ log.content[key].length }}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <code>
+      <div *ngFor="let entry of log.content[key]">
+        [{{ entry.timestamp }}] {{ entry.content }}  
+      </div>
+    </code>
+  </mat-expansion-panel>
+</ng-template>

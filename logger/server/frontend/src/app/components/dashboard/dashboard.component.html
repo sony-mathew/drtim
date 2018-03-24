@@ -1,12 +1,39 @@
 <mat-list role="list">
-  <mat-list-item role="listitem" *ngFor="let log of logs">
+  <div class="item" *ngFor="let log of logs">
+    
     <div fxLayout="row" fxLayoutGap="20px">
-      <div>{{ log.corId }}</div>
+      
+      <div><a routerLink="/logs/{{log.corId}}">{{ log.corId.substr(0, 16) }}</a></div>
+      
       <div>
         {{ log.timestamp | formatDate }}
+      </div>
+      
+      <div class="tree">
+        <ng-container *ngTemplateOutlet="showTree; context: { relation: log.relation }">
+        </ng-container>
+      </div>
+      
+      <div class="log-content" fxLayout="column" fxLayoutGap="5px">
+        <code>
+          <div  *ngFor="let key of log.content | keys">
+            [{{ key }}] [{{ log.content[key][0].timestamp }}] {{ log.content[key][0].content }}
+          </div>
+        </code>
       </div>
     </div>
 
     <mat-divider></mat-divider>
-  </mat-list-item>
+
+  </div>
 </mat-list>
+
+<ng-template #showTree let-relation="relation">
+  <ul *ngIf="relation | checkObject">
+    <li *ngFor="let key of relation | keys">
+      <a>{{ key }}</a>
+      <ng-container *ngTemplateOutlet="showTree; context: { relation: relation[key] }">
+      </ng-container>
+    </li>
+  </ul>
+</ng-template>

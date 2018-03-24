@@ -8,11 +8,13 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { 
   MatToolbarModule, MatIconModule, MatButtonModule, MatCardModule, MatDividerModule,
   MatListModule, MatTableModule, MatProgressSpinnerModule, MatInputModule, MatSelectModule,
-  MatDialogModule, MatSnackBarModule, MatTabsModule, MatSlideToggleModule, MatTooltipModule
+  MatDialogModule, MatSnackBarModule, MatTabsModule, MatSlideToggleModule, MatTooltipModule,
+  MatExpansionModule
 } from '@angular/material';
 
 import { MainRoutingModule } from './routes/main-routing.module';
 
+import { LogEntryComponent } from './components';
 import { AppComponent } from './components/';
 import { AllComponents } from './components/';
 
@@ -22,7 +24,7 @@ import { AllPipes } from './pipes/';
 @NgModule({
   declarations: [
     ...AllComponents, ...AllPipes,
-    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +38,7 @@ import { AllPipes } from './pipes/';
     MatToolbarModule, MatIconModule, MatButtonModule, MatCardModule, MatDividerModule,
     MatListModule, MatTableModule, MatProgressSpinnerModule, MatInputModule, 
     MatSelectModule, MatDialogModule, MatSnackBarModule, MatTabsModule, MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule, MatExpansionModule
   ],
   providers: [
     ...AllServices,
@@ -44,6 +46,6 @@ import { AllPipes } from './pipes/';
   ],
   bootstrap: [AppComponent],
   exports: [],
-  entryComponents: []
+  entryComponents: [LogEntryComponent]
 })
 export class AppModule { }

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { 
-  NotFoundComponent, DashboardComponent
+  NotFoundComponent, DashboardComponent, LogEntryComponent
 } from '../components/';
 
 const routes: Routes = [
@@ -10,7 +10,12 @@ const routes: Routes = [
     route for dashboard
   */
   { path: '', component: DashboardComponent, data: { title: 'Dashboard' } },
-  
+
+  /* 
+    route for details log
+  */
+
+  { path: 'logs/:log_id', component: LogEntryComponent, data: { title: 'LogEntry Show' } },  
   /*
     not found route
   */
