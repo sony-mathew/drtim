@@ -1,0 +1,12 @@
+<mat-list role="list">
+  <mat-list-item role="listitem" *ngFor="let log of logs">
+    <div fxLayout="row" fxLayoutGap="20px">
+      <div>{{ log.corId }}</div>
+      <div>
+        {{ log.timestamp | formatDate }}
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+  </mat-list-item>
+</mat-list>
